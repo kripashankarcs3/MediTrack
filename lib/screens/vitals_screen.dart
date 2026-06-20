@@ -80,7 +80,7 @@ class _VitalsScreenState extends State<VitalsScreen> {
         centerTitle: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 160),
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
         child: Column(
           children: [
             const SizedBox(height: 12),

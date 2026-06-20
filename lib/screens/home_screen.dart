@@ -23,33 +23,124 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Fixed Header Section
-        SizedBox(height: MediaQuery.of(context).padding.top + 12),
-        _buildTopBar(context),
-        const SizedBox(height: 12),
-        _buildGreetingHeader(),
-        const SizedBox(height: 20),
+        // Fixed Sticky Header — only logo + notification
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+            child: SizedBox(
+              height: 58,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Logo
+                    Row(
+                      children: [
+                        HeartPulseIcon(
+                          colors: const [Color(0xFF6C4DFF), Color(0xFF8A5FFF)],
+                          size: 24,
+                        ),
+                        const SizedBox(width: 10),
+                        ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [Color(0xFF6C4DFF), Color(0xFF8A5FFF)],
+                          ).createShader(bounds),
+                          child: const Text(
+                            'MediTrack',
+                            style: TextStyle(
+                              fontFamily: 'Outfit',
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.5,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    // Notification Bell
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF8FAFC),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.notifications_none_rounded,
+                            color: Color(0xFF2D2D2D),
+                            size: 22,
+                          ),
+                        ),
+                        Positioned(
+                          right: -2,
+                          top: -2,
+                          child: Container(
+                            width: 14,
+                            height: 14,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFFF3B30),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: Text(
+                                '2',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
         // Scrollable Content
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.only(bottom: 160.0),
+            padding: const EdgeInsets.only(bottom: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 16),
+                // Greeting Section — scrolls with content
+                _buildGreetingHeader(),
+                const SizedBox(height: 20),
                 // Health Status Hero Card (Purple Gradient)
                 _buildHealthStatusCard(context),
                 
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 
                 // Section Title & 2x2 Daily Health Cards Grid
                 _buildVitalsGridSection(context),
                 
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 
                 // Today's Next Medicine Card
                 _buildNextMedicineSection(context),
                 
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 
                 // Emergency SOS Card
                 _buildEmergencyCard(),
@@ -58,92 +149,6 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  // Top bar with Heartbeat Logo and Notification icon
-  Widget _buildTopBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 24, right: 24, top: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Custom Heartbeat Logo
-          Row(
-            children: [
-              HeartPulseIcon(
-                colors: const [Color(0xFF6C4DFF), Color(0xFF8A5FFF)],
-                size: 24,
-              ),
-              const SizedBox(width: 10),
-              ShaderMask(
-                shaderCallback: (bounds) => const LinearGradient(
-                  colors: [Color(0xFF6C4DFF), Color(0xFF8A5FFF)],
-                ).createShader(bounds),
-                child: const Text(
-                  'MediTrack',
-                  style: TextStyle(
-                    fontFamily: 'Outfit',
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.5,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          
-          // Notification Bell with red badge
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.08),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.notifications_none_rounded,
-                  color: Color(0xFF2D2D2D),
-                  size: 22,
-                ),
-              ),
-              Positioned(
-                right: -2,
-                top: -2,
-                child: Container(
-                  width: 14,
-                  height: 14,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFF3B30),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Center(
-                    child: Text(
-                      '2',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 
@@ -370,24 +375,28 @@ class HomeScreen extends StatelessWidget {
                   color: Color(0xFF1D2939),
                 ),
               ),
-              TextButton(
-                onPressed: () => onNavigate(1),
-                child: const Text(
-                  'सभी देखें ›',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF7F56D9),
+              InkWell(
+                onTap: () => onNavigate(1),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                  child: Text(
+                    'सभी देखें ›',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF7F56D9),
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
+            padding: EdgeInsets.zero,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
@@ -580,7 +589,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
                 Row(
                   children: [
                     // Icon Wrapper
@@ -760,28 +769,36 @@ class HomeScreen extends StatelessWidget {
 
 // Draw a solid heart with heartbeat pulse stroke lines over it
 class HeartPulseIcon extends StatelessWidget {
-  final Color color;
+  final Color? color;
+  final List<Color>? colors;
   final double size;
-  const HeartPulseIcon({super.key, required this.color, this.size = 24});
+  const HeartPulseIcon({super.key, this.color, this.colors, this.size = 24});
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size(size, size),
-      painter: _HeartPulseIconPainter(color),
+      painter: _HeartPulseIconPainter(color: color, colors: colors),
     );
   }
 }
 
 class _HeartPulseIconPainter extends CustomPainter {
-  final Color color;
-  _HeartPulseIconPainter(this.color);
+  final Color? color;
+  final List<Color>? colors;
+  _HeartPulseIconPainter({this.color, this.colors});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = color
       ..style = PaintingStyle.fill;
+    if (colors != null && colors!.length >= 2) {
+      paint.shader = LinearGradient(
+        colors: colors!,
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+    } else {
+      paint.color = color ?? Colors.black;
+    }
 
     final path = Path();
     double width = size.width;

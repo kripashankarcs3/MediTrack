@@ -86,7 +86,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
             child: filteredList.isEmpty
                 ? _buildEmptyState()
                 : ListView.builder(
-                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 180),
+                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {
                       final item = filteredList[index];

@@ -5,8 +5,17 @@ import 'screens/vitals_screen.dart';
 import 'screens/medicines_screen.dart';
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:flutter/services.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarDividerColor: Colors.transparent,
+    systemNavigationBarIconBrightness: Brightness.dark,
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+  ));
   runApp(const MediTrackApp());
 }
 
@@ -25,7 +34,6 @@ class MediTrackApp extends StatelessWidget {
           primary: const Color(0xFF7F56D9),
           secondary: const Color(0xFF6366F1),
         ),
-        // Google fonts configuration for high contrast and elder-readability
         textTheme: GoogleFonts.notoSansDevanagariTextTheme(
           Theme.of(context).textTheme,
         ).copyWith(
@@ -51,7 +59,7 @@ class MainShell extends StatefulWidget {
   State<MainShell> createState() => _MainShellState();
 }
 
-class _MainShellState extends State<MainShell> with SingleTickerProviderStateMixin {
+class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
   // Master Medicines List
@@ -92,13 +100,12 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
   Timer? _sosTimer;
   bool _isSosAlertSent = false;
 
-  // Voice overlay animation helper
+  // Voice overlay state
   bool _isVoiceAssistantActive = false;
   String _voicePromptText = "सुन रहा हूँ...";
   String _voiceSubText = "कृपया बोलिए (जैसे: 'दवा', 'बीपी', 'मदद', 'होम')";
   String _voiceTranscript = "...";
 
-  // Triggering the Voice Assistant dialog
   void _openVoiceAssistant() {
     setState(() {
       _isVoiceAssistantActive = true;
@@ -108,7 +115,6 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
     });
   }
 
-  // Simulate parsing speaking keywords
   void _processVoiceCommand(String command) {
     setState(() {
       _voiceTranscript = '"$command"';
@@ -122,16 +128,16 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
       int targetIndex = _currentIndex;
 
       if (command.contains("दवा") || command.contains("remind") || command.contains("medicine")) {
-        targetIndex = 3; // Medicine Screen
+        targetIndex = 3; // Medicines
         responseText = "दवाइयाँ स्क्रीन खोल रहा हूँ";
       } else if (command.contains("बीपी") || command.contains("शुगर") || command.contains("आंकड़े") || command.contains("vital") || command.contains("report")) {
-        targetIndex = 1; // Vitals Screen
-        responseText = "आपके स्वास्थ्य आंकड़े दिखा रहा हूँ";
+        targetIndex = 1; // Vitals
+        responseText = "आपके आंकड़े दिखा रहा हूँ";
       } else if (command.contains("मदद") || command.contains("sos") || command.contains("help") || command.contains("आपातकाल")) {
         responseText = "आपातकालीन अलर्ट शुरू किया जा रहा है!";
         _triggerSOSFlow();
       } else if (command.contains("होम") || command.contains("home") || command.contains("डैशबोर्ड")) {
-        targetIndex = 0; // Home Screen
+        targetIndex = 0; // Home
         responseText = "होम डैशबोर्ड खोल रहा हूँ";
       } else {
         responseText = "माफ़ कीजिये, समझ नहीं आया।";
@@ -142,7 +148,6 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
         _currentIndex = targetIndex;
       });
 
-      // Automatically close helper after 1.5s
       Future.delayed(const Duration(milliseconds: 1500), () {
         if (mounted) {
           setState(() {
@@ -153,10 +158,9 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
     });
   }
 
-  // Start SOS countdown flow
   void _triggerSOSFlow() {
     setState(() {
-      _isVoiceAssistantActive = false; // Hide voice helper if active
+      _isVoiceAssistantActive = false;
       _isSosCountdownActive = true;
       _sosCountdownVal = 3;
       _isSosAlertSent = false;
@@ -178,7 +182,6 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
     });
   }
 
-  // Cancel active SOS countdown
   void _cancelSOS() {
     _sosTimer?.cancel();
     setState(() {
@@ -196,21 +199,18 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
     );
   }
 
-  // Calculate percentage of taken medicines
   double _calculateProgress() {
     if (_medicines.isEmpty) return 0.0;
     int takenCount = _medicines.where((med) => med['isTaken'] == true).length;
     return takenCount / _medicines.length;
   }
 
-  // Toggle medicine check state
   void _toggleMedicineStatus(int index) {
     setState(() {
       _medicines[index]['isTaken'] = !_medicines[index]['isTaken'];
     });
   }
 
-  // Add new medicine dynamically
   void _addNewMedicine(String name, String time, String dose, String instruction) {
     setState(() {
       _medicines.add({
@@ -241,11 +241,9 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    // Determine the next medicine details (first incomplete or the next in list)
     var nextMed = _medicines.firstWhere((med) => med['isTaken'] == false, orElse: () => _medicines.first);
     bool isNextMedTaken = nextMed['isTaken'];
 
-    // Screens list
     final List<Widget> screens = [
       HomeScreen(
         medicineProgress: _calculateProgress(),
@@ -267,7 +265,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
           _currentIndex = 0;
         });
       }),
-      const SizedBox(), // Placeholder for Floating mic button actions
+      const SizedBox(), // Spacer
       MedicinesScreen(
         medicinesList: _medicines,
         onToggleStatus: _toggleMedicineStatus,
@@ -281,11 +279,8 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // Current Screen View
+          // Current Screen View (Fills body area and resizes automatically above bottom navigation bar)
           screens[_currentIndex],
-          
-          // Floating Bottom Navigation Bar
-          _buildFloatingBottomNav(),
           
           // Voice Assistant Siri Overlay dialog
           if (_isVoiceAssistantActive) _buildVoiceOverlay(),
@@ -297,92 +292,95 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
           if (_isSosAlertSent) _buildSosSuccessOverlay(),
         ],
       ),
+      // Placed inside the bottomNavigationBar parameter so body content stops exactly above it
+      bottomNavigationBar: _buildFloatingBottomNav(),
     );
   }
 
   // Custom Floating Bottom Navigation Bar
   Widget _buildFloatingBottomNav() {
-    double bottomPadding = MediaQuery.of(context).padding.bottom;
-    double bottomPosition = bottomPadding > 0 ? bottomPadding + 8 : 16;
+    double bottomInset = MediaQuery.of(context).padding.bottom;
 
-    return Positioned(
-      bottom: bottomPosition,
-      left: 16,
-      right: 16,
-      child: Container(
-        height: 72,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.92),
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 24,
-              offset: const Offset(0, 8),
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        bottom: bottomInset + 14,
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.topCenter,
+        children: [
+          // Nav bar
+          Container(
+            height: 74,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.95),
+              borderRadius: BorderRadius.circular(32),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 28,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
-            BoxShadow(
-              color: const Color(0xFF7F56D9).withValues(alpha: 0.02),
-              blurRadius: 10,
-              spreadRadius: 2,
-            )
-          ],
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(0, 'होम', icon: Icons.home_rounded),
-            _buildNavItem(1, 'आँकड़े', icon: Icons.favorite_rounded),
-            
-            // Central floating voice mic button
-            _buildFloatingMicButton(),
-            
-            _buildNavItem(
-              3,
-              'दवाइयाँ',
-              customIcon: CapsuleIcon(
-                color: _currentIndex == 3 ? const Color(0xFF7F56D9) : const Color(0xFF98A2B3),
-                size: 24,
-              ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildNavItem(0, 'होम', icon: Icons.home_rounded),
+                _buildNavItem(1, 'आँकड़े', icon: Icons.favorite_rounded),
+                const SizedBox(width: 68),
+                _buildNavItem(
+                  3,
+                  'दवाइयाँ',
+                  customIcon: CapsuleIcon(
+                    color: _currentIndex == 3 ? const Color(0xFF6C4DFF) : const Color(0xFFB0B7C3),
+                    size: 22,
+                  ),
+                ),
+                _buildNavItem(4, 'प्रोफाइल', icon: Icons.person_rounded),
+              ],
             ),
-            _buildNavItem(4, 'प्रोफाइल', icon: Icons.person_rounded),
-          ],
-        ),
+          ),
+          // Floating mic button above nav bar
+          Positioned(
+            top: -14,
+            child: _buildFloatingMicButton(),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildNavItem(int index, String label, {IconData? icon, Widget? customIcon}) {
     bool isActive = _currentIndex == index;
-    Color iconColor = isActive ? const Color(0xFF7F56D9) : const Color(0xFF98A2B3);
+    Color iconColor = isActive ? const Color(0xFF6C4DFF) : const Color(0xFFB0B7C3);
     return InkWell(
       onTap: () {
         setState(() {
           _currentIndex = index;
         });
       },
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        width: 54,
-        height: 54,
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
+      borderRadius: BorderRadius.circular(12),
+      child: SizedBox(
+        width: 52,
+        height: 60,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             customIcon ?? Icon(
               icon,
               color: iconColor,
-              size: 24,
+              size: 22,
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
                 color: iconColor,
               ),
             ),
@@ -396,22 +394,21 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
     return GestureDetector(
       onTap: _openVoiceAssistant,
       child: Container(
-        width: 76,
-        height: 76,
-        margin: const EdgeInsets.only(bottom: 28),
+        width: 62,
+        height: 62,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: const LinearGradient(
-            colors: [Color(0xFF8B5CF6), Color(0xFF7F56D9)],
+            colors: [Color(0xFF5B3DFF), Color(0xFF7B61FF)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          border: Border.all(color: Colors.white, width: 3),
+          border: Border.all(color: Colors.white, width: 2.5),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF7F56D9).withValues(alpha: 0.35),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
+              color: const Color(0xFF5B3DFF).withValues(alpha: 0.25),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
@@ -419,7 +416,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
           child: Icon(
             Icons.mic_rounded,
             color: Colors.white,
-            size: 34,
+            size: 28,
           ),
         ),
       ),
@@ -448,7 +445,6 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -472,8 +468,6 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                 ],
               ),
               const SizedBox(height: 16),
-              
-              // Pulsating mic waves illustration
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -497,7 +491,6 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                 ],
               ),
               const SizedBox(height: 20),
-              
               Text(
                 _voicePromptText,
                 style: const TextStyle(
@@ -515,10 +508,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                   color: Color(0xFF475467),
                 ),
               ),
-              
               const SizedBox(height: 16),
-              
-              // Quick Actions simulated tap tags
               Wrap(
                 spacing: 10,
                 children: [
@@ -552,10 +542,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                   ),
                 ],
               ),
-              
               const SizedBox(height: 16),
-              
-              // Dynamic speech output
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -613,8 +600,6 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                 ),
               ),
               const SizedBox(height: 40),
-              
-              // Large numeric countdown circle
               Container(
                 width: 140,
                 height: 140,
@@ -645,7 +630,6 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                 ),
               ),
               const SizedBox(height: 40),
-              
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 40.0),
                 child: Text(
@@ -659,8 +643,6 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                 ),
               ),
               const SizedBox(height: 40),
-              
-              // Cancel Button
               GestureDetector(
                 onTap: _cancelSOS,
                 child: Container(
@@ -751,8 +733,6 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                 ),
               ),
               const SizedBox(height: 20),
-              
-              // Activity log
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -769,9 +749,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                   ],
                 ),
               ),
-              
               const SizedBox(height: 24),
-              
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -838,12 +816,10 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
         centerTitle: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 160),
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
         child: Column(
           children: [
             const SizedBox(height: 16),
-            
-            // Profile Card Details
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -886,13 +862,10 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                       color: Color(0xFF475467),
                     ),
                   ),
-                  
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16.0),
                     child: Divider(color: Color(0xFFF1F5F9)),
                   ),
-                  
-                  // Vital details parameters grid
                   GridView.count(
                     crossAxisCount: 2,
                     shrinkWrap: true,
@@ -910,10 +883,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                 ],
               ),
             ),
-            
             const SizedBox(height: 20),
-            
-            // Caretakers List Contact Card
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -942,7 +912,6 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
                   ),
                   const SizedBox(height: 16),
-                  
                   _buildCaretakerRow('👨‍👦', 'अमित शर्मा (बेटा)', '+91 98765 43210'),
                   const Divider(color: Color(0xFFF8FAFC), height: 20),
                   _buildCaretakerRow('🩺', 'डॉ. आर. के. गुप्ता (फैमिली डॉक्टर)', '+91 99999 88888'),
@@ -1072,4 +1041,3 @@ class _CapsuleIconPainter extends CustomPainter {
     return oldDelegate.color != color;
   }
 }
-
