@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:google_fonts/google_fonts.dart';
+import 'doctor_appointment_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final double medicineProgress;
@@ -8,6 +10,9 @@ class HomeScreen extends StatelessWidget {
   final bool isNextMedTaken;
   final VoidCallback onTriggerSos;
   final Function(int) onNavigate;
+  final Function(int) onOpenVitalDetail;
+  final int medicineTakenCount;
+  final int medicineTotalCount;
 
   const HomeScreen({
     super.key,
@@ -17,6 +22,9 @@ class HomeScreen extends StatelessWidget {
     required this.isNextMedTaken,
     required this.onTriggerSos,
     required this.onNavigate,
+    required this.onOpenVitalDetail,
+    required this.medicineTakenCount,
+    required this.medicineTotalCount,
   });
 
   @override
@@ -130,7 +138,10 @@ class HomeScreen extends StatelessWidget {
                 // Health Status Hero Card (Purple Gradient)
                 _buildHealthStatusCard(context),
                 
-                const SizedBox(height: 20),
+                // Quick Access Section
+                _buildQuickAccessSection(context),
+
+                const SizedBox(height: 4),
                 
                 // Section Title & 2x2 Daily Health Cards Grid
                 _buildVitalsGridSection(context),
@@ -358,182 +369,277 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // 2x2 White Vitals Cards Section
+  // Today's Vitals Cards Section with Horizontal Scroll
   Widget _buildVitalsGridSection(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
             children: [
-              const Text(
-                'आज के महत्वपूर्ण आंकड़े',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF1D2939),
+              // Red-tinted card with heart icon on the left
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF0F2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.favorite_rounded,
+                    color: Color(0xFFF43F5E),
+                    size: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'आज के महत्वपूर्ण आंकड़े',
+                  style: GoogleFonts.outfit(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF1D2939),
+                  ),
                 ),
               ),
               InkWell(
                 onTap: () => onNavigate(1),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
                   child: Text(
                     'सभी देखें ›',
-                    style: TextStyle(
+                    style: GoogleFonts.outfit(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF7F56D9),
+                      color: const Color(0xFF7F56D9),
                     ),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.35,
+        ),
+        const SizedBox(height: 12),
+        
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          clipBehavior: Clip.none,
+          child: Row(
             children: [
               _buildVitalCard(
-                title: 'ब्लड प्रेशर',
+                title: 'BP',
                 value: '120/80',
-                iconData: Icons.favorite_rounded,
-                iconBgColor: const Color(0xFFFFF0F2),
-                iconColor: const Color(0xFFF43F5E),
-                onTap: () => onNavigate(1),
+                unit: 'mmHg',
+                leadingWidget: const HeartPulseIcon(
+                  color: Color(0xFFF43F5E),
+                  size: 16,
+                ),
+                bgColor: const Color(0xFFFFF5F5),
+                borderColor: const Color(0xFFFFF0F1),
+                onTap: () => onOpenVitalDetail(0),
               ),
+              const SizedBox(width: 12),
               _buildVitalCard(
-                title: 'शुगर (रक्त शर्करा)',
-                value: '98 mg/dL',
-                iconData: Icons.water_drop_rounded,
-                iconBgColor: const Color(0xFFFFF0F2),
-                iconColor: const Color(0xFFF43F5E),
-                onTap: () => onNavigate(1),
+                title: 'शुगर',
+                value: '98',
+                unit: 'mg/dL',
+                leadingWidget: const Icon(
+                  Icons.water_drop_rounded,
+                  color: Color(0xFF3B82F6),
+                  size: 18,
+                ),
+                bgColor: const Color(0xFFF0F7FF),
+                borderColor: const Color(0xFFEEF6FF),
+                onTap: () => onOpenVitalDetail(1),
               ),
+              const SizedBox(width: 12),
               _buildVitalCard(
-                title: 'ऑक्सीजन (SpO₂)',
+                title: 'SpO₂',
                 value: '98%',
-                iconData: Icons.circle,
-                textIcon: 'O₂',
-                iconBgColor: const Color(0xFFEBF5FF),
-                iconColor: const Color(0xFF3B82F6),
-                onTap: () => onNavigate(1),
+                leadingWidget: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'O',
+                        style: GoogleFonts.outfit(
+                          color: const Color(0xFF12B76A),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '₂',
+                        style: GoogleFonts.outfit(
+                          color: const Color(0xFF12B76A),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                bgColor: const Color(0xFFF3FAF6),
+                borderColor: const Color(0xFFEDF7F1),
+                onTap: () => onOpenVitalDetail(2),
               ),
+              const SizedBox(width: 12),
               _buildVitalCard(
                 title: 'तापमान',
                 value: '98.6°F',
-                iconData: Icons.thermostat_rounded,
-                iconBgColor: const Color(0xFFFFF4E5),
-                iconColor: const Color(0xFFF97316),
-                onTap: () => onNavigate(1),
+                leadingWidget: const Icon(
+                  Icons.thermostat_rounded,
+                  color: Color(0xFFF97316),
+                  size: 18,
+                ),
+                bgColor: const Color(0xFFFFFDF5),
+                borderColor: const Color(0xFFFFF9EE),
+                onTap: () => onOpenVitalDetail(3),
               ),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildVitalCard({
     required String title,
     required String value,
-    required IconData iconData,
-    required Color iconBgColor,
-    required Color iconColor,
-    String? textIcon,
+    String? unit,
+    required Widget leadingWidget,
+    required Color bgColor,
+    required Color borderColor,
     required VoidCallback onTap,
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        width: 125,
+        height: 136,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          color: bgColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: borderColor, width: 1.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            // Top Row: Icon/Text leading, Title, Chevron
             Row(
               children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: iconBgColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: textIcon != null
-                        ? Text(
-                            textIcon,
-                            style: TextStyle(
-                              color: iconColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Outfit',
-                            ),
-                          )
-                        : Icon(
-                            iconData,
-                            color: iconColor,
-                            size: 16,
-                          ),
-                  ),
-                ),
-                const SizedBox(width: 8),
+                leadingWidget,
+                const SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF475467),
+                    style: GoogleFonts.outfit(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF475467),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  size: 16,
+                  color: Color(0xFF1D2939),
+                ),
               ],
             ),
-            Text(
-              value,
-              style: const TextStyle(
-                fontFamily: 'Outfit',
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF1D2939),
-              ),
+            
+            // Middle Row: Value & Unit
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (unit != null && title == 'शुगर') ...[
+                  // Sugar inline layout matching screenshot: "98 mg/dL"
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: value,
+                          style: GoogleFonts.outfit(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF1D2939),
+                          ),
+                        ),
+                        const TextSpan(text: ' '),
+                        TextSpan(
+                          text: unit,
+                          style: GoogleFonts.outfit(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF667085),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ] else ...[
+                  // Normal value text
+                  Text(
+                    value,
+                    style: GoogleFonts.outfit(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF1D2939),
+                      height: 1.1,
+                    ),
+                  ),
+                  if (unit != null)
+                    Text(
+                      unit,
+                      style: GoogleFonts.outfit(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF667085),
+                        height: 1.1,
+                      ),
+                    ),
+                ],
+              ],
             ),
+
+            // Bottom Row: Status Badge (Green dot + "सामान्य")
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFFECFDF3),
-                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xFFE6F7ED),
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: const Text(
-                'सामान्य',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF12B76A),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF12B76A),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Text(
+                      'सामान्य',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF12B76A),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -669,6 +775,57 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
+                // Progress dots
+                Row(
+                  children: [
+                    ...List.generate(medicineTotalCount, (i) {
+                      final isFilled = i < medicineTakenCount;
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        width: 14,
+                        height: 14,
+                        margin: const EdgeInsets.only(right: 6),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isFilled ? const Color(0xFF12B76A) : const Color(0xFFE2E8F0),
+                          border: Border.all(
+                            color: isFilled ? const Color(0xFF12B76A) : const Color(0xFFCBD5E1),
+                            width: 2,
+                          ),
+                        ),
+                      );
+                    }),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        '$medicineTakenCount/$medicineTotalCount दवाइयाँ ली गईं',
+                        style: const TextStyle(
+                          fontFamily: 'Outfit',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1D2939),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF12B76A),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${(medicineTakenCount / medicineTotalCount * 100).round()}%',
+                        style: const TextStyle(
+                          fontFamily: 'Outfit',
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -765,7 +922,463 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+
+  // Quick Access Section
+  Widget _buildQuickAccessSection(BuildContext context) {
+    final quickItems = [
+      _QuickAccessItem(
+        icon: DoctorIcon(size: 20),
+        label: 'Doctor\nAppointment',
+        circleColor: const Color(0xFF6C4DFF),
+        chevronBgColor: const Color(0xFFF1EEFF),
+        chevronIconColor: const Color(0xFF6C4DFF),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ChooseDoctorScreen())),
+      ),
+      const _QuickAccessItem(
+        icon: MedicalFolderIcon(size: 20),
+        label: 'Medical\nRecords',
+        circleColor: Color(0xFF00B050),
+        chevronBgColor: Color(0xFFE6F7ED),
+        chevronIconColor: Color(0xFF00B050),
+      ),
+      const _QuickAccessItem(
+        icon: Icon(Icons.people_alt_rounded, color: Colors.white, size: 20),
+        label: 'Family\nConnect',
+        circleColor: Color(0xFF2E82FF),
+        chevronBgColor: Color(0xFFEFF6FF),
+        chevronIconColor: Color(0xFF2E82FF),
+      ),
+      const _QuickAccessItem(
+        icon: HealthReportChartIcon(size: 20),
+        label: 'My Health\nReport',
+        circleColor: Color(0xFF8A5FFF),
+        chevronBgColor: Color(0xFFF5F1FF),
+        chevronIconColor: Color(0xFF8A5FFF),
+        isNew: true,
+      ),
+      const _QuickAccessItem(
+        icon: Icon(Icons.lightbulb_outline_rounded, color: Colors.white, size: 20),
+        label: 'Health\nTips',
+        circleColor: Color(0xFFFF9800),
+        chevronBgColor: Color(0xFFFFF7ED),
+        chevronIconColor: Color(0xFFFF9800),
+      ),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section header with purple accent bar
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            children: [
+              Container(
+                width: 6,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF8A5FFF),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Quick Access',
+                  style: GoogleFonts.outfit(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1D2939),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {},
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                  child: Text(
+                    'सभी विकल्प देखें ›',
+                    style: GoogleFonts.outfit(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF7F56D9),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Cards horizontal scroll
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 20),
+          clipBehavior: Clip.none,
+          child: Row(
+            children: quickItems.map((item) {
+              return Padding(
+                padding: EdgeInsets.only(
+                  right: item == quickItems.last ? 0 : 12,
+                ),
+                child: _QuickAccessCard(item: item, onTap: item.onTap),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
 }
+
+// Quick Access card model
+class _QuickAccessItem {
+  final Widget icon;
+  final String label;
+  final Color circleColor;
+  final Color chevronBgColor;
+  final Color chevronIconColor;
+  final bool isNew;
+  final VoidCallback? onTap;
+  const _QuickAccessItem({
+    required this.icon,
+    required this.label,
+    required this.circleColor,
+    required this.chevronBgColor,
+    required this.chevronIconColor,
+    this.isNew = false,
+    this.onTap,
+  });
+}
+
+// Quick Access card widget with scale animation
+class _QuickAccessCard extends StatefulWidget {
+  final _QuickAccessItem item;
+  final VoidCallback? onTap;
+  const _QuickAccessCard({required this.item, this.onTap});
+
+  @override
+  State<_QuickAccessCard> createState() => _QuickAccessCardState();
+}
+
+class _QuickAccessCardState extends State<_QuickAccessCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+    _scale = Tween<double>(begin: 1.0, end: 0.96).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) {
+        _controller.reverse();
+        widget.onTap?.call();
+      },
+      onTapCancel: () => _controller.reverse(),
+      child: AnimatedBuilder(
+        animation: _scale,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _scale.value,
+            child: child,
+          );
+        },
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: 154,
+              height: 72,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  // Icon circle
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: widget.item.circleColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: widget.item.icon,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Label
+                  Expanded(
+                    child: Text(
+                      widget.item.label,
+                      style: GoogleFonts.outfit(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF1D2939),
+                        height: 1.15,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  // Chevron button
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: widget.item.chevronBgColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.chevron_right_rounded,
+                        size: 16,
+                        color: widget.item.chevronIconColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (widget.item.isNew)
+              Positioned(
+                top: -8,
+                right: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF6C4DFF),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    'NEW',
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class DoctorIcon extends StatelessWidget {
+  final double size;
+  const DoctorIcon({super.key, this.size = 24});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size(size, size),
+      painter: _DoctorIconPainter(),
+    );
+  }
+}
+
+class _DoctorIconPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final w = size.width;
+    final h = size.height;
+
+    // Doctor Cap:
+    final capPath = Path();
+    capPath.moveTo(w * 0.3, h * 0.28);
+    capPath.lineTo(w * 0.3, h * 0.18);
+    capPath.quadraticBezierTo(w * 0.5, h * 0.08, w * 0.7, h * 0.18);
+    capPath.lineTo(w * 0.7, h * 0.28);
+    capPath.close();
+    canvas.drawPath(capPath, paint);
+
+    // Head/Face:
+    double cx = w * 0.5;
+    double cy = h * 0.42;
+    canvas.drawCircle(Offset(cx, cy), w * 0.16, paint);
+
+    // Cap Cross Sign:
+    final crossPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    canvas.drawLine(Offset(w * 0.5, h * 0.13), Offset(w * 0.5, h * 0.23), crossPaint);
+    canvas.drawLine(Offset(w * 0.45, h * 0.18), Offset(w * 0.55, h * 0.18), crossPaint);
+
+    // Shoulders/Coat:
+    final coatPath = Path();
+    coatPath.moveTo(w * 0.18, h * 0.82);
+    coatPath.quadraticBezierTo(w * 0.2, h * 0.62, w * 0.34, h * 0.62);
+    coatPath.lineTo(w * 0.66, h * 0.62);
+    coatPath.quadraticBezierTo(w * 0.8, h * 0.62, w * 0.82, h * 0.82);
+    canvas.drawPath(coatPath, paint);
+
+    // Plus symbol on chest:
+    double px = w * 0.64;
+    double py = h * 0.72;
+    canvas.drawLine(Offset(px, py - 4), Offset(px, py + 4), paint);
+    canvas.drawLine(Offset(px - 4, py), Offset(px + 4, py), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class MedicalFolderIcon extends StatelessWidget {
+  final double size;
+  const MedicalFolderIcon({super.key, this.size = 24});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size(size, size),
+      painter: _MedicalFolderIconPainter(),
+    );
+  }
+}
+
+class _MedicalFolderIconPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final w = size.width;
+    final h = size.height;
+
+    // Folder shape:
+    final folderPath = Path();
+    folderPath.moveTo(w * 0.12, h * 0.8);
+    folderPath.lineTo(w * 0.12, h * 0.3);
+    folderPath.lineTo(w * 0.42, h * 0.3);
+    folderPath.lineTo(w * 0.48, h * 0.2);
+    folderPath.lineTo(w * 0.72, h * 0.2);
+    folderPath.quadraticBezierTo(w * 0.8, h * 0.2, w * 0.82, h * 0.3);
+    folderPath.lineTo(w * 0.88, h * 0.3);
+    folderPath.lineTo(w * 0.88, h * 0.8);
+    folderPath.close();
+    canvas.drawPath(folderPath, paint);
+
+    // Plus sign in center:
+    double px = w * 0.5;
+    double py = h * 0.55;
+    canvas.drawLine(Offset(px, py - 4), Offset(px, py + 4), paint);
+    canvas.drawLine(Offset(px - 4, py), Offset(px + 4, py), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class HealthReportChartIcon extends StatelessWidget {
+  final double size;
+  const HealthReportChartIcon({super.key, this.size = 24});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size(size, size),
+      painter: _HealthReportChartIconPainter(),
+    );
+  }
+}
+
+class _HealthReportChartIconPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final w = size.width;
+    final h = size.height;
+
+    // Document sheet outline with folded top-right corner:
+    final docPath = Path();
+    docPath.moveTo(w * 0.15, h * 0.82);
+    docPath.lineTo(w * 0.15, h * 0.18);
+    docPath.lineTo(w * 0.62, h * 0.18);
+    docPath.lineTo(w * 0.85, h * 0.4);
+    docPath.lineTo(w * 0.85, h * 0.82);
+    docPath.close();
+    canvas.drawPath(docPath, paint);
+
+    // Corner Fold:
+    canvas.drawLine(Offset(w * 0.62, h * 0.18), Offset(w * 0.62, h * 0.4), paint);
+    canvas.drawLine(Offset(w * 0.62, h * 0.4), Offset(w * 0.85, h * 0.4), paint);
+
+    // Mini bar graph inside:
+    final fillPaintOrange = Paint()
+      ..color = const Color(0xFFFF9800)
+      ..style = PaintingStyle.fill;
+    final fillPaintBlue = Paint()
+      ..color = const Color(0xFF2196F3)
+      ..style = PaintingStyle.fill;
+
+    // Bar 1 (left):
+    canvas.drawRect(
+      Rect.fromLTWH(w * 0.3, h * 0.58, w * 0.08, h * 0.18),
+      fillPaintOrange,
+    );
+    // Bar 2 (middle):
+    canvas.drawRect(
+      Rect.fromLTWH(w * 0.43, h * 0.5, w * 0.08, h * 0.26),
+      fillPaintBlue,
+    );
+    // Bar 3 (right):
+    canvas.drawRect(
+      Rect.fromLTWH(w * 0.56, h * 0.45, w * 0.08, h * 0.31),
+      fillPaintOrange,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
 
 // Draw a solid heart with heartbeat pulse stroke lines over it
 class HeartPulseIcon extends StatelessWidget {

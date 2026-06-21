@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'screens/home_screen.dart';
 import 'screens/vitals_screen.dart';
 import 'screens/medicines_screen.dart';
+import 'screens/vital_detail_screen.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/services.dart';
@@ -249,6 +250,8 @@ class _MainShellState extends State<MainShell> {
         medicineProgress: _calculateProgress(),
         nextMedicine: nextMed,
         isNextMedTaken: isNextMedTaken,
+        medicineTakenCount: _medicines.where((m) => m['isTaken'] == true).length,
+        medicineTotalCount: _medicines.length,
         onTakeMedicine: () {
           int idx = _medicines.indexOf(nextMed);
           _toggleMedicineStatus(idx);
@@ -258,6 +261,16 @@ class _MainShellState extends State<MainShell> {
           setState(() {
             _currentIndex = index;
           });
+        },
+        onOpenVitalDetail: (index) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => VitalDetailScreen(
+                vitalType: VitalType.values[index],
+              ),
+            ),
+          );
         },
       ),
       VitalsScreen(onBack: () {
