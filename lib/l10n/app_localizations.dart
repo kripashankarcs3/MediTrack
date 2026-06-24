@@ -674,6 +674,24 @@ abstract class AppLocalizations {
   /// **'Add new medicine using the button below.'**
   String get noMedicinesSubtitle;
 
+  /// No description provided for @noRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'No records found'**
+  String get noRecords;
+
+  /// No description provided for @filterReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get filterReports;
+
+  /// No description provided for @filterScans.
+  ///
+  /// In en, this message translates to:
+  /// **'Scans'**
+  String get filterScans;
+
   /// No description provided for @filterTaken.
   ///
   /// In en, this message translates to:

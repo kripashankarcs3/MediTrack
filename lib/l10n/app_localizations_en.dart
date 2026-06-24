@@ -317,6 +317,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noMedicinesSubtitle => 'Add new medicine using the button below.';
 
   @override
+  String get noRecords => 'No records found';
+
+  @override
+  String get filterReports => 'Reports';
+
+  @override
+  String get filterScans => 'Scans';
+
+  @override
   String get filterTaken => 'Taken';
 
   @override

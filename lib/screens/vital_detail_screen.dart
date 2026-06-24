@@ -938,18 +938,18 @@ class _TrendLinePainter extends CustomPainter {
   }
 
   double _parseValue(String v) {
-    final cleaned = v.replaceAll(RegExp(r'[^0-9.]'), '');
-    final parts = cleaned.split('.');
-    if (parts.length >= 2 && parts[0].isNotEmpty && parts[1].isNotEmpty) {
-      return double.tryParse(cleaned) ?? 0;
-    }
     if (v.contains('/')) {
       final systolic = v.split('/').first.trim();
-      return double.tryParse(systolic) ?? 0;
+      return double.tryParse(systolic.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
     }
+    final cleaned = v.replaceAll(RegExp(r'[^0-9.]'), '');
     return double.tryParse(cleaned) ?? 0;
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _TrendLinePainter oldDelegate) {
+    return oldDelegate.readings != readings ||
+        oldDelegate.color != color ||
+        oldDelegate.unit != unit;
+  }
 }

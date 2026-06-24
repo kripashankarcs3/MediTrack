@@ -3,6 +3,10 @@ import 'dart:math' as math;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
 import 'doctor_appointment_screen.dart';
+import 'medical_records_screen.dart';
+import 'family_screen.dart';
+import 'health_report_screen.dart';
+import 'health_tips_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final double medicineProgress;
@@ -215,9 +219,9 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const Text(
-                      '👋',
-                      style: TextStyle(fontSize: 22),
+                    Text(
+                      AppLocalizations.of(context)!.greetingSuffix,
+                      style: const TextStyle(fontSize: 22),
                     ),
                   ],
                 ),
@@ -955,6 +959,7 @@ class HomeScreen extends StatelessWidget {
         circleColor: const Color(0xFF00B050),
         chevronBgColor: const Color(0xFFE6F7ED),
         chevronIconColor: const Color(0xFF00B050),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const MedicalRecordsScreen())),
       ),
       _QuickAccessItem(
         icon: const Icon(Icons.people_alt_rounded, color: Colors.white, size: 20),
@@ -962,6 +967,7 @@ class HomeScreen extends StatelessWidget {
         circleColor: const Color(0xFF2E82FF),
         chevronBgColor: const Color(0xFFEFF6FF),
         chevronIconColor: const Color(0xFF2E82FF),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FamilyScreen())),
       ),
       _QuickAccessItem(
         icon: const HealthReportChartIcon(size: 20),
@@ -970,6 +976,7 @@ class HomeScreen extends StatelessWidget {
         chevronBgColor: const Color(0xFFF5F1FF),
         chevronIconColor: const Color(0xFF8A5FFF),
         isNew: true,
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HealthReportScreen())),
       ),
       _QuickAccessItem(
         icon: const Icon(Icons.lightbulb_outline_rounded, color: Colors.white, size: 20),
@@ -977,6 +984,7 @@ class HomeScreen extends StatelessWidget {
         circleColor: const Color(0xFFFF9800),
         chevronBgColor: const Color(0xFFFFF7ED),
         chevronIconColor: const Color(0xFFFF9800),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HealthTipsScreen())),
       ),
     ];
 
@@ -1007,20 +1015,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              InkWell(
-                onTap: () {},
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                  child: Text(
-                    AppLocalizations.of(context)!.seeAllOptions,
-                    style: GoogleFonts.outfit(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF7F56D9),
-                    ),
-                  ),
-                ),
-              ),
+              const SizedBox(width: 10),
             ],
           ),
         ),

@@ -72,10 +72,6 @@ class _VitalsScreenState extends State<VitalsScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.calendar_today_rounded, color: Color(0xFF475467)),
-            onPressed: () {},
-          ),
           const SizedBox(width: 8),
         ],
         centerTitle: false,

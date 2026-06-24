@@ -7,7 +7,7 @@ import 'screens/vitals_screen.dart';
 import 'screens/medicines_screen.dart';
 import 'screens/vital_detail_screen.dart';
 import 'screens/notifications_screen.dart';
-import 'screens/language_settings_screen.dart';
+import 'screens/profile_screen.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/services.dart';
@@ -194,24 +194,6 @@ class _MainShellState extends State<MainShell> {
       'time': 'आज, 9:00 AM',
       'isRead': false,
     },
-    {
-      'id': '5',
-      'icon': Icons.water_drop_rounded,
-      'iconColor': const Color(0xFFF59E0B),
-      'title': 'Vitamin D3 लेने का समय',
-      'body': 'Vitamin D3 रात 8:00 बजे लेनी है। खाने के बाद लें।',
-      'time': 'कल, 7:30 PM',
-      'isRead': true,
-    },
-    {
-      'id': '6',
-      'icon': Icons.notifications_active_rounded,
-      'iconColor': const Color(0xFFD92D20),
-      'title': 'SOS अलर्ट भेजा गया',
-      'body': 'आपका आपातकालीन अलर्ट अमित शर्मा और डॉ. आर. के. गुप्ता को भेज दिया गया है।',
-      'time': 'कल, 3:20 PM',
-      'isRead': true,
-    },
   ];
 
   int get _unreadCount => _notifications.where((n) => n['isRead'] == false).length;
@@ -382,7 +364,7 @@ class _MainShellState extends State<MainShell> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Dua "$name" scheduled successfully!',
+          AppLocalizations.of(context)!.scheduleMedicine,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: const Color(0xFF7F56D9),
@@ -399,8 +381,10 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    var nextMed = _medicines.firstWhere((med) => med['isTaken'] == false, orElse: () => _medicines.first);
-    bool isNextMedTaken = nextMed['isTaken'];
+    var nextMed = _medicines.isEmpty
+        ? <String, dynamic>{}
+        : _medicines.firstWhere((med) => med['isTaken'] == false, orElse: () => _medicines.first);
+    bool isNextMedTaken = nextMed['isTaken'] ?? false;
 
     final List<Widget> screens = [
       HomeScreen(
@@ -445,7 +429,10 @@ class _MainShellState extends State<MainShell> {
         notificationCount: _unreadCount,
         onOpenNotifications: _openNotifications,
       ),
-      _buildProfileScreen(),
+      ProfileScreen(
+        currentLocale: widget.locale,
+        onLocaleChanged: widget.onLocaleChanged,
+      ),
     ];
 
     return Scaffold(
@@ -622,9 +609,9 @@ class _MainShellState extends State<MainShell> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    AppLocalizations.of(context)!.voiceAssistantTitle,
-                    style: const TextStyle(
+                  const Text(
+                    'MediTrack Voice Assistant',
+                    style: TextStyle(
                       fontFamily: 'Outfit',
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -687,29 +674,29 @@ class _MainShellState extends State<MainShell> {
                 spacing: 10,
                 children: [
                   ActionChip(
-                    label: Text(AppLocalizations.of(context)!.voiceMedicine),
-                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdMedicine),
+                    label: const Text('💊 दवाइयाँ'),
+                    onPressed: () => _processVoiceCommand('दवाइयाँ स्क्रीन खोलो'),
                     backgroundColor: const Color(0xFFF3E8FF),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   ActionChip(
-                    label: Text(AppLocalizations.of(context)!.voiceVitals),
-                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdVitals),
+                    label: const Text('📊 आंकड़े'),
+                    onPressed: () => _processVoiceCommand('रिपोर्ट दिखाओ'),
                     backgroundColor: const Color(0xFFEBF5FF),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   ActionChip(
-                    label: Text(AppLocalizations.of(context)!.voiceSos),
-                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdSos),
+                    label: const Text('🚨 मदद (SOS)'),
+                    onPressed: () => _processVoiceCommand('मदद चाहिए'),
                     backgroundColor: const Color(0xFFFEF3F2),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   ActionChip(
-                    label: Text(AppLocalizations.of(context)!.voiceHome),
-                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdHome),
+                    label: const Text('🏠 होम'),
+                    onPressed: () => _processVoiceCommand('होम जाओ'),
                     backgroundColor: const Color(0xFFF2F4F7),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -757,18 +744,18 @@ class _MainShellState extends State<MainShell> {
                 style: TextStyle(fontSize: 64),
               ),
               const SizedBox(height: 16),
-              Text(
-                AppLocalizations.of(context)!.emergencyAlert,
-                style: const TextStyle(
+              const Text(
+                'आपातकालीन अलर्ट',
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
                 ),
               ),
               const SizedBox(height: 6),
-              Text(
-                AppLocalizations.of(context)!.sosSending,
-                style: const TextStyle(
+              const Text(
+                'मदद के लिए संदेश भेजा जा रहा है...',
+                style: TextStyle(
                   color: Color(0xFF94A3B8),
                   fontSize: 16,
                 ),
@@ -804,11 +791,11 @@ class _MainShellState extends State<MainShell> {
                 ),
               ),
               const SizedBox(height: 40),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 40.0),
                 child: Text(
-                  AppLocalizations.of(context)!.sosInforming,
-                  style: const TextStyle(
+                  'डॉक्टर और आपके परिवार को तुरंत सूचना दी जा रही है।',
+                  style: TextStyle(
                     color: Color(0xFFE2E8F0),
                     fontSize: 15,
                     height: 1.4,
@@ -834,12 +821,12 @@ class _MainShellState extends State<MainShell> {
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.close_rounded, color: Color(0xFFD92D20), size: 22),
-                      const SizedBox(width: 8),
+                    children: const [
+                      Icon(Icons.close_rounded, color: Color(0xFFD92D20), size: 22),
+                      SizedBox(width: 8),
                       Text(
-                        AppLocalizations.of(context)!.sosCancel,
-                        style: const TextStyle(
+                        'रद्द करें (Cancel)',
+                        style: TextStyle(
                           color: Color(0xFFD92D20),
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
@@ -889,18 +876,18 @@ class _MainShellState extends State<MainShell> {
                 child: const Icon(Icons.check_rounded, color: Colors.white, size: 48),
               ),
               const SizedBox(height: 18),
-              Text(
-                AppLocalizations.of(context)!.sosSent,
-                style: const TextStyle(
+              const Text(
+                'अलर्ट भेज दिया गया!',
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF12B76A),
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                AppLocalizations.of(context)!.sosDontWorry,
-                style: const TextStyle(
+              const Text(
+                'रमेश जी, घबराएं नहीं।',
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF475467),
@@ -915,11 +902,11 @@ class _MainShellState extends State<MainShell> {
                 ),
                 child: Column(
                   children: [
-                    _buildLogItem(AppLocalizations.of(context)!.sosSmsSent),
+                    _buildLogItem('💬 बेटे अमित को SMS भेज दिया गया है।'),
                     const SizedBox(height: 10),
-                    _buildLogItem(AppLocalizations.of(context)!.sosCallingDoctor),
+                    _buildLogItem('📞 डॉ. आर. के. गुप्ता को कॉल किया जा रहा है।'),
                     const SizedBox(height: 10),
-                    _buildLogItem(AppLocalizations.of(context)!.sosLocationShared),
+                    _buildLogItem('📍 आपकी लोकेशन (नई दिल्ली) शेयर कर दी गई है।'),
                   ],
                 ),
               ),
@@ -939,9 +926,9 @@ class _MainShellState extends State<MainShell> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
-                    AppLocalizations.of(context)!.sosClose,
-                    style: const TextStyle(
+                  child: const Text(
+                    'ठीक है (Close)',
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -966,262 +953,6 @@ class _MainShellState extends State<MainShell> {
           child: Text(
             desc,
             style: const TextStyle(fontSize: 13, color: Color(0xFF1D2939), fontWeight: FontWeight.w500),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _openLanguageSettings() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => LanguageSettingsScreen(
-          currentLocale: widget.locale,
-          onLocaleChanged: widget.onLocaleChanged,
-        ),
-      ),
-    );
-  }
-
-  // Profile Screen Widget
-  Widget _buildProfileScreen() {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.myProfile,
-          style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF1D2939),
-          ),
-        ),
-        centerTitle: false,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFFF1F5F9)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFF3E8FF), width: 4),
-                    ),
-                    child: const CircleAvatar(
-                      radius: 46,
-                      backgroundImage: AssetImage('assets/images/avatar.png'),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    AppLocalizations.of(context)!.userName,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    AppLocalizations.of(context)!.userInfo,
-                    style: const TextStyle(
-                      fontFamily: 'Outfit',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF475467),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
-                    child: Divider(color: Color(0xFFF1F5F9)),
-                  ),
-                  GridView.count(
-                    crossAxisCount: 2,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    childAspectRatio: 2.2,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    children: [
-                      _buildProfileDetailItem(AppLocalizations.of(context)!.bloodGroup, AppLocalizations.of(context)!.bloodGroupVal),
-                      _buildProfileDetailItem(AppLocalizations.of(context)!.height, AppLocalizations.of(context)!.heightVal),
-                      _buildProfileDetailItem(AppLocalizations.of(context)!.weight, AppLocalizations.of(context)!.weightVal),
-                      _buildProfileDetailItem(AppLocalizations.of(context)!.city, AppLocalizations.of(context)!.cityVal),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            // Language Settings
-            InkWell(
-              onTap: _openLanguageSettings,
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: const Border(
-                    left: BorderSide(color: Color(0xFF7F56D9), width: 4),
-                    top: BorderSide(color: Color(0xFFF1F5F9)),
-                    right: BorderSide(color: Color(0xFFF1F5F9)),
-                    bottom: BorderSide(color: Color(0xFFF1F5F9)),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF3E8FF),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.language_rounded, color: Color(0xFF7F56D9), size: 22),
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppLocalizations.of(context)!.selectLanguage,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            widget.locale.languageCode == 'hi' ? 'हिन्दी' : 'English',
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF667085)),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(Icons.chevron_right_rounded, color: Color(0xFF98A2B3)),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: const Border(
-                  left: BorderSide(color: Color(0xFFD92D20), width: 4),
-                  top: BorderSide(color: Color(0xFFF1F5F9)),
-                  right: BorderSide(color: Color(0xFFF1F5F9)),
-                  bottom: BorderSide(color: Color(0xFFF1F5F9)),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.emergencyContacts,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildCaretakerRow('👨‍👦', AppLocalizations.of(context)!.caretakerSon, AppLocalizations.of(context)!.phoneAmit),
-                  const Divider(color: Color(0xFFF8FAFC), height: 20),
-                  _buildCaretakerRow('🩺', AppLocalizations.of(context)!.caretakerDoctor, AppLocalizations.of(context)!.phoneDoctor),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProfileDetailItem(String label, String val) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF98A2B3)),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          val,
-          style: const TextStyle(
-            fontFamily: 'Outfit',
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF1D2939),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCaretakerRow(String avatarStub, String name, String phone) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Text(avatarStub, style: const TextStyle(fontSize: 24)),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1D2939)),
-                ),
-                Text(
-                  phone,
-                  style: const TextStyle(
-                    fontFamily: 'Outfit',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF475467),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF8FAFC),
-            shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFFE2E8F0)),
-          ),
-          child: const Center(
-            child: Icon(Icons.phone_enabled_rounded, color: Color(0xFF12B76A), size: 16),
           ),
         ),
       ],

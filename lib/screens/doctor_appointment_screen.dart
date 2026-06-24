@@ -2174,7 +2174,7 @@ class _ConfettiPainter extends CustomPainter {
       canvas.translate(x, y);
       canvas.rotate(t * p.rotationSpeed);
       
-      if (p.size % 2 == 0) {
+      if (p.size.round() % 2 == 0) {
         canvas.drawRect(Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size * 0.6), paint);
       } else {
         canvas.drawCircle(Offset.zero, p.size / 2, paint);

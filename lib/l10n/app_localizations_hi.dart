@@ -122,22 +122,22 @@ class AppLocalizationsHi extends AppLocalizations {
   String get quickAccess => 'त्वरित विकल्प';
 
   @override
-  String get quickDoctor => 'Doctor\nAppointment';
+  String get quickDoctor => 'डॉक्टर\nअपॉइंटमेंट';
 
   @override
-  String get quickRecords => 'Medical\nRecords';
+  String get quickRecords => 'मेडिकल\nरिकॉर्ड';
 
   @override
-  String get quickFamily => 'Family\nConnect';
+  String get quickFamily => 'परिवार\nकनेक्ट';
 
   @override
-  String get quickReport => 'My Health\nReport';
+  String get quickReport => 'मेरी सेहत\nरिपोर्ट';
 
   @override
-  String get quickTips => 'Health\nTips';
+  String get quickTips => 'स्वास्थ्य\nसुझाव';
 
   @override
-  String get badgeNew => 'NEW';
+  String get badgeNew => 'नया';
 
   @override
   String get vitalsTitle => 'मेरे आंकड़े (Vitals)';
@@ -194,10 +194,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get today => 'आज';
 
   @override
-  String get yesterday => 'कल';
+  String get yesterday => 'बीता कल';
 
   @override
-  String get tomorrow => 'कल';
+  String get tomorrow => 'आने वाला कल';
 
   @override
   String get todayLatest => 'आज का नवीनतम';
@@ -315,6 +315,15 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get noMedicinesSubtitle => 'नीचे बटन दबाकर नई दवा जोड़ें।';
+
+  @override
+  String get noRecords => 'कोई रिकॉर्ड नहीं मिला';
+
+  @override
+  String get filterReports => 'रिपोर्ट';
+
+  @override
+  String get filterScans => 'स्कैन';
 
   @override
   String get filterTaken => 'पूर्ण';
