@@ -137,23 +137,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('रमेश जी शर्मा', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white)),
-                  const Text('Ramesh Ji Sharma', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70)),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20)),
-                        child: const Text('ID: MT-2024-5687', style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600)),
-                      ),
-                      const SizedBox(width: 8),
-                      const Text('Primary Account', style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w700, decoration: TextDecoration.underline)),
-                    ],
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('रमेश जी शर्मा', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const Text('Ramesh Ji Sharma', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20)),
+                          child: const Text('ID: MT-2024-5687', style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600)),
+                        ),
+                        const Text('Primary Account', style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w700, decoration: TextDecoration.underline)),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -170,13 +172,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFF1F5F9))),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(emoji, style: const TextStyle(fontSize: 20)),
             const SizedBox(height: 8),
-            Text(titleHi, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF475467)), textAlign: TextAlign.center),
-            Text(titleEn, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w500, color: Color(0xFF98A2B3)), textAlign: TextAlign.center),
+            Text(titleHi, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF475467)), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(titleEn, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w500, color: Color(0xFF98A2B3)), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
             const SizedBox(height: 6),
-            Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+            Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)), maxLines: 1, overflow: TextOverflow.ellipsis),
           ],
         ),
       ),
@@ -205,8 +208,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 2),
-                    Text(titleHi, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF1D2939))),
-                    Text(titleEn, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF667085))),
+                    Text(titleHi, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF1D2939)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(titleEn, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF667085)), maxLines: 1, overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
@@ -551,13 +554,13 @@ class PrivacySecuritySubScreen extends StatelessWidget {
           Icon(icon, color: const Color(0xFF667085), size: 22),
           const SizedBox(width: 16),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(hi, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
-                Text(en, style: const TextStyle(fontSize: 11, color: Color(0xFF98A2B3))),
-              ],
-            ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(hi, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(en, style: const TextStyle(fontSize: 11, color: Color(0xFF98A2B3)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                ],
+              ),
           ),
           if (status.isNotEmpty)
             Container(
@@ -670,8 +673,8 @@ PreferredSizeWidget _buildSubAppBar(String hi, String en, BuildContext context) 
     leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Color(0xFF1D2939)), onPressed: () => Navigator.pop(context)),
     title: Column(
       children: [
-        Text(hi, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
-        Text(en, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF667085))),
+        Text(hi, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)), maxLines: 1, overflow: TextOverflow.ellipsis),
+        Text(en, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF667085)), maxLines: 1, overflow: TextOverflow.ellipsis),
       ],
     ),
     centerTitle: true,
@@ -691,10 +694,10 @@ Widget _buildInfoTile(IconData icon, String hi, String en, String val1, String v
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('$hi ($en)', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF98A2B3))),
+              Text('$hi ($en)', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF98A2B3)), maxLines: 1, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 4),
-              Text(val1, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1D2939))),
-              if (val2.isNotEmpty) Text(val2, style: const TextStyle(fontSize: 12, color: Color(0xFF667085))),
+              Text(val1, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1D2939)), maxLines: 2, overflow: TextOverflow.ellipsis),
+              if (val2.isNotEmpty) Text(val2, style: const TextStyle(fontSize: 12, color: Color(0xFF667085)), maxLines: 1, overflow: TextOverflow.ellipsis),
             ],
           ),
         ),
@@ -763,10 +766,12 @@ Widget _buildMedInfoTile(String name, String desc) {
     child: Row(children: [
       const Icon(Icons.medication_outlined, color: Color(0xFF7F56D9)),
       const SizedBox(width: 12),
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-        Text(desc, style: const TextStyle(fontSize: 12, color: Color(0xFF667085))),
-      ]),
+      Expanded(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+          Text(desc, style: const TextStyle(fontSize: 12, color: Color(0xFF667085)), maxLines: 1, overflow: TextOverflow.ellipsis),
+        ]),
+      ),
     ]),
   );
 }
@@ -785,17 +790,17 @@ Widget _buildContactTile(String hi, String en, String phone, String tag, String 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(hi, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
-              Text(en, style: const TextStyle(fontSize: 11, color: Color(0xFF667085))),
+              Text(hi, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(en, style: const TextStyle(fontSize: 11, color: Color(0xFF667085)), maxLines: 1, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 4),
-              Text(phone, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475467))),
+              Text(phone, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475467)), maxLines: 1, overflow: TextOverflow.ellipsis),
             ],
           ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(color: isPrimary ? const Color(0xFFECFDF3) : const Color(0xFFF2F4F7), borderRadius: BorderRadius.circular(4)),
-          child: Text(tag, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: isPrimary ? const Color(0xFF027A48) : const Color(0xFF344054))),
+          child: Text(tag, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: isPrimary ? const Color(0xFF027A48) : const Color(0xFF344054)), maxLines: 1, overflow: TextOverflow.ellipsis),
         ),
         const SizedBox(width: 8),
         const Icon(Icons.more_vert, size: 18, color: Color(0xFF98A2B3)),
@@ -817,8 +822,8 @@ Widget _buildSwitchTile(IconData icon, String hi, String en, bool val, Function(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(hi, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
-              Text(en, style: const TextStyle(fontSize: 11, color: Color(0xFF98A2B3))),
+              Text(hi, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(en, style: const TextStyle(fontSize: 11, color: Color(0xFF98A2B3)), maxLines: 1, overflow: TextOverflow.ellipsis),
             ],
           ),
         ),
