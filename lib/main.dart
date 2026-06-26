@@ -6,6 +6,7 @@ import 'providers/language_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/vitals_provider.dart';
 import 'models/vital_reading.dart';
+import 'services/openrouter_service.dart';
 import 'theme/app_theme.dart';
 import 'screens/home_screen.dart';
 import 'screens/vitals_screen.dart';
@@ -400,52 +401,60 @@ class _MainShellState extends State<MainShell> {
     });
   }
 
-  void _processVoiceCommand(String command) {
+  void _processVoiceCommand(String command) async {
     setState(() {
       _voicePromptText = AppLocalizations.of(context)!.voiceProcessing;
     });
 
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
+    await Future.delayed(const Duration(milliseconds: 300));
 
-      var vital = _parseVitalFromText(command);
-      if (vital != null) {
-        _saveVitalReading(vital['type']!, vital['value']!);
-        setState(() {
-          _voicePromptText = '${_vitalTypeLabel(vital['type']!)}: ${vital['value']} ${AppLocalizations.of(context)!.readingSavedLabel}';
-          _voiceTranscript = '"$command"';
-        });
-        _closeVoiceAfterDelay();
-        return;
-      }
+    if (!mounted) return;
 
-      String responseText = "";
-      int targetIndex = _currentIndex;
-
-      if (command.contains(AppLocalizations.of(context)!.voiceKeywordMedicine) || command.contains("remind") || command.contains("medicine")) {
-        targetIndex = 3;
-        responseText = AppLocalizations.of(context)!.voiceRespMedicine;
-      } else if (command.contains(AppLocalizations.of(context)!.voiceKeywordVital) || command.contains(AppLocalizations.of(context)!.voiceKeywordReport) || command.contains("vital") || command.contains("report")) {
-        targetIndex = 1;
-        responseText = AppLocalizations.of(context)!.voiceRespVitals;
-      } else if (command.contains(AppLocalizations.of(context)!.voiceKeywordSos) || command.contains("sos") || command.contains("help") || command.contains(AppLocalizations.of(context)!.voiceKeywordHelp)) {
-        responseText = AppLocalizations.of(context)!.voiceRespSos;
-        _triggerSOSFlow();
-      } else if (command.contains(AppLocalizations.of(context)!.voiceKeywordHome) || command.contains("home") || command.contains(AppLocalizations.of(context)!.voiceKeywordDashboard)) {
-        targetIndex = 0;
-        responseText = AppLocalizations.of(context)!.voiceRespHome;
-      } else {
-        responseText = AppLocalizations.of(context)!.voiceRespFallback;
-      }
-
+    var vital = _parseVitalFromText(command);
+    if (vital == null) {
       setState(() {
-        _voicePromptText = responseText;
-        _voiceTranscript = '"$command"';
-        _currentIndex = targetIndex;
+        _voiceSubText = 'Asking AI...';
       });
+      vital = await OpenRouterService.parseVitalFromSpeech(command);
+    }
 
+    if (vital != null) {
+      final v = vital;
+      _saveVitalReading(v['type']!, v['value']!);
+      setState(() {
+        _voicePromptText = '${_vitalTypeLabel(v['type']!)}: ${v['value']} ${AppLocalizations.of(context)!.readingSavedLabel}';
+        _voiceTranscript = '"$command"';
+      });
       _closeVoiceAfterDelay();
+      return;
+    }
+
+    String responseText = "";
+    int targetIndex = _currentIndex;
+
+    if (command.contains(AppLocalizations.of(context)!.voiceKeywordMedicine) || command.contains("remind") || command.contains("medicine")) {
+      targetIndex = 3;
+      responseText = AppLocalizations.of(context)!.voiceRespMedicine;
+    } else if (command.contains(AppLocalizations.of(context)!.voiceKeywordVital) || command.contains(AppLocalizations.of(context)!.voiceKeywordReport) || command.contains("vital") || command.contains("report")) {
+      targetIndex = 1;
+      responseText = AppLocalizations.of(context)!.voiceRespVitals;
+    } else if (command.contains(AppLocalizations.of(context)!.voiceKeywordSos) || command.contains("sos") || command.contains("help") || command.contains(AppLocalizations.of(context)!.voiceKeywordHelp)) {
+      responseText = AppLocalizations.of(context)!.voiceRespSos;
+      _triggerSOSFlow();
+    } else if (command.contains(AppLocalizations.of(context)!.voiceKeywordHome) || command.contains("home") || command.contains(AppLocalizations.of(context)!.voiceKeywordDashboard)) {
+      targetIndex = 0;
+      responseText = AppLocalizations.of(context)!.voiceRespHome;
+    } else {
+      responseText = AppLocalizations.of(context)!.voiceRespFallback;
+    }
+
+    setState(() {
+      _voicePromptText = responseText;
+      _voiceTranscript = '"$command"';
+      _currentIndex = targetIndex;
     });
+
+    _closeVoiceAfterDelay();
   }
 
   void _triggerSOSFlow() {
