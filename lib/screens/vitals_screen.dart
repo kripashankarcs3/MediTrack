@@ -334,65 +334,64 @@ class _VitalsScreenState extends State<VitalsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Flexible(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: emojiBg,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(child: Text(emoji, style: const TextStyle(fontSize: 20))),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: emojiBg,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    const SizedBox(width: 12),
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Center(child: Text(emoji, style: const TextStyle(fontSize: 20))),
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 140,
+                        child: Text(
+                          title,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: c.secondaryText,
+                          ),
+                        ),
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
                         children: [
                           Text(
-                            title,
-                            overflow: TextOverflow.ellipsis,
+                            value,
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: c.secondaryText,
+                              fontFamily: 'Outfit',
+                              fontSize: 24,
+                              fontWeight: FontWeight.w800,
+                              color: c.primaryText,
                             ),
                           ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.baseline,
-                            textBaseline: TextBaseline.alphabetic,
-                            children: [
-                              Text(
-                                value,
-                                style: TextStyle(
-                                  fontFamily: 'Outfit',
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w800,
-                                  color: c.primaryText,
-                                ),
+                          if (unit.isNotEmpty) ...[
+                            const SizedBox(width: 4),
+                            Text(
+                              unit,
+                              style: TextStyle(
+                                fontFamily: 'Outfit',
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: c.secondaryText,
                               ),
-                              if (unit.isNotEmpty) ...[
-                                const SizedBox(width: 4),
-                                Text(
-                                  unit,
-                                  style: TextStyle(
-                                    fontFamily: 'Outfit',
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: c.secondaryText,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
+                            ),
+                          ],
                         ],
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
