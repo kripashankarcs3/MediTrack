@@ -771,13 +771,16 @@ class _MainShellState extends State<MainShell> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    AppLocalizations.of(context)!.voiceAssistantTitle,
-                    style: TextStyle(
-                      fontFamily: 'Outfit',
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: c.secondaryText,
+                  Flexible(
+                    child: Text(
+                      AppLocalizations.of(context)!.voiceAssistantTitle,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: c.secondaryText,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -873,6 +876,9 @@ class _MainShellState extends State<MainShell> {
               const SizedBox(height: 20),
               Text(
                 _voicePromptText,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
@@ -882,6 +888,9 @@ class _MainShellState extends State<MainShell> {
               const SizedBox(height: 4),
               Text(
                 _voiceSubText,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -950,6 +959,8 @@ class _MainShellState extends State<MainShell> {
                       : (_voiceTranscript.isNotEmpty
                           ? _voiceTranscript
                           : AppLocalizations.of(context)!.voiceTranscript),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 15,
                     color: _voiceSavedMessage.isNotEmpty

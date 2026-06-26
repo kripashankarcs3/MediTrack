@@ -334,59 +334,65 @@ class _VitalsScreenState extends State<VitalsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: emojiBg,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(child: Text(emoji, style: const TextStyle(fontSize: 20))),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: c.secondaryText,
-                        ),
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: emojiBg,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
+                      child: Center(child: Text(emoji, style: const TextStyle(fontSize: 20))),
+                    ),
+                    const SizedBox(width: 12),
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            value,
+                            title,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontFamily: 'Outfit',
-                              fontSize: 24,
-                              fontWeight: FontWeight.w800,
-                              color: c.primaryText,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: c.secondaryText,
                             ),
                           ),
-                          if (unit.isNotEmpty) ...[
-                            const SizedBox(width: 4),
-                            Text(
-                              unit,
-                              style: TextStyle(
-                                fontFamily: 'Outfit',
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: c.secondaryText,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: [
+                              Text(
+                                value,
+                                style: TextStyle(
+                                  fontFamily: 'Outfit',
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w800,
+                                  color: c.primaryText,
+                                ),
                               ),
-                            ),
-                          ],
+                              if (unit.isNotEmpty) ...[
+                                const SizedBox(width: 4),
+                                Text(
+                                  unit,
+                                  style: TextStyle(
+                                    fontFamily: 'Outfit',
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: c.secondaryText,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -426,16 +432,20 @@ class _VitalsScreenState extends State<VitalsScreen> {
           
           // X-Axis Labels
           Padding(
-            padding: const EdgeInsets.only(left: 30.0), // Match left offset of the graph lines
+            padding: const EdgeInsets.only(left: 30.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: xLabels
-                  .map((label) => Text(
-                        label,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: c.secondaryText,
+                  .map((label) => Flexible(
+                        child: Text(
+                          label,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: c.secondaryText,
+                          ),
                         ),
                       ))
                   .toList(),

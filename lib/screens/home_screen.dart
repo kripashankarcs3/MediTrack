@@ -71,21 +71,24 @@ class HomeScreen extends StatelessWidget {
                           size: 24,
                         ),
                         const SizedBox(width: 10),
-                        ShaderMask(
-                          shaderCallback: (bounds) => const LinearGradient(
-                            colors: [Color(0xFF6C4DFF), Color(0xFF8A5FFF)],
-                          ).createShader(bounds),
-                          child: Text(
-                            AppLocalizations.of(context)!.appTitle,
-                            style: const TextStyle(
-                              fontFamily: 'Outfit',
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: -0.5,
-                              color: Colors.white,
-                            ),
+                    Flexible(
+                      child: ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [Color(0xFF6C4DFF), Color(0xFF8A5FFF)],
+                        ).createShader(bounds),
+                        child: Text(
+                          AppLocalizations.of(context)!.appTitle,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.5,
+                            color: Colors.white,
                           ),
                         ),
+                      ),
+                    ),
                       ],
                     ),
                     // Notification Bell
@@ -213,12 +216,15 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(
-                      AppLocalizations.of(context)!.greeting,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        color: c.primaryText,
+                    Flexible(
+                      child: Text(
+                        AppLocalizations.of(context)!.greeting,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: c.primaryText,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -701,12 +707,15 @@ class HomeScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      AppLocalizations.of(context)!.todayNextMedicine,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: c.primaryText,
+                    Flexible(
+                      child: Text(
+                        AppLocalizations.of(context)!.todayNextMedicine,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: c.primaryText,
+                        ),
                       ),
                     ),
                     Text(
@@ -882,27 +891,32 @@ class HomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // Title and description
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.emergencyHelp,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFFD92D20),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.emergencyHelp,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFFD92D20),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  AppLocalizations.of(context)!.emergencySubtitle,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: c.secondaryText,
+                  const SizedBox(height: 2),
+                  Text(
+                    AppLocalizations.of(context)!.emergencySubtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: c.secondaryText,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             
             // Giant SOS Trigger Button (Pill shaped with siren and SOS text)
